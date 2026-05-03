@@ -46,12 +46,12 @@ app.post('/api/signup', (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-        return res.status(400).json({ success: false, message: 'Tamam fields zaruri hain (naam, email, password)' });
+        return res.status(400).json({ success: false, message: 'Fill all feilds (name, email, password)' });
     }
 
     const exists = users.find(u => u.email === email);
     if (exists) {
-        return res.status(409).json({ success: false, message: 'Is email se account pehle se mawjood hai' });
+        return res.status(409).json({ success: false, message: 'Email already exists' });
     }
 
     const newUser = {
@@ -65,7 +65,7 @@ app.post('/api/signup', (req, res) => {
 
     return res.status(201).json({
         success: true,
-        message: `🎉 Account ban gaya! Khush aamdeed ${name}. Ab login karein.`,
+        message: `🎉 Account has benn created Welcome ${name}. Now login please .`,
         user: { id: newUser.id, name: newUser.name, email: newUser.email }
     });
 });
@@ -75,17 +75,17 @@ app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Email aur password daalein' });
+        return res.status(400).json({ success: false, message: ' Enter Email and password ' });
     }
 
     const user = users.find(u => u.email === email && u.password === password);
     if (!user) {
-        return res.status(401).json({ success: false, message: 'Email ya password galat hai' });
+        return res.status(401).json({ success: false, message: 'Email or password is wrong' });
     }
 
     return res.json({
         success: true,
-        message: `✅ Login kamyab! Khush aamdeed wapas, ${user.name}!`,
+        message: `✅ Login successful Welcome again, ${user.name}!`,
         user: { id: user.id, name: user.name, email: user.email }
     });
 });
@@ -101,7 +101,7 @@ app.get('/api/products', (req, res) => {
 app.post('/api/products', (req, res) => {
     const { name, price, category, image, description, rating } = req.body;
     if (!name || !price) {
-        return res.status(400).json({ success: false, message: 'Naam aur price zaruri hain' });
+        return res.status(400).json({ success: false, message: 'Name and price are required' });
     }
     const newProduct = {
         id: nextProductId++,
@@ -113,27 +113,27 @@ app.post('/api/products', (req, res) => {
         rating: parseFloat(rating) || 4.0
     };
     products.push(newProduct);
-    res.status(201).json({ success: true, message: '✅ Product add ho gaya!', product: newProduct });
+    res.status(201).json({ success: true, message: '✅ Product added!', product: newProduct });
 });
 
 // PUT update product (Admin)
 app.put('/api/products/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const index = products.findIndex(p => p.id === id);
-    if (index === -1) return res.status(404).json({ success: false, message: 'Product nahi mila' });
+    if (index === -1) return res.status(404).json({ success: false, message: 'Product not found' });
 
     products[index] = { ...products[index], ...req.body, id };
-    res.json({ success: true, message: '✅ Product update ho gaya!', product: products[index] });
+    res.json({ success: true, message: '✅ Product updated!', product: products[index] });
 });
 
 // DELETE product (Admin)
 app.delete('/api/products/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const index = products.findIndex(p => p.id === id);
-    if (index === -1) return res.status(404).json({ success: false, message: 'Product nahi mila' });
+    if (index === -1) return res.status(404).json({ success: false, message: 'Product not found' });
 
     products.splice(index, 1);
-    res.json({ success: true, message: '🗑️ Product delete ho gaya!' });
+    res.json({ success: true, message: '🗑️ Product deleted!' });
 });
 
 // ─── Orders Routes ────────────────────────────────────────────
@@ -159,21 +159,21 @@ app.post('/api/orders', (req, res) => {
 app.put('/api/orders/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const index = orders.findIndex(o => o.id === id);
-    if (index === -1) return res.status(404).json({ success: false, message: 'Order nahi mila' });
+    if (index === -1) return res.status(404).json({ success: false, message: 'Order not received' });
 
     orders[index] = { ...orders[index], ...req.body };
-    res.json({ success: true, message: '✅ Order status update ho gaya!', order: orders[index] });
+    res.json({ success: true, message: '✅ Order status is updated!', order: orders[index] });
 });
 
 // ─── Health Check ─────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', message: 'TREND HIVE Backend chal raha hai ✅', users: users.length, products: products.length, orders: orders.length });
+    res.json({ status: 'OK', message: 'TREND HIVE Backend is running ✅', users: users.length, products: products.length, orders: orders.length });
 });
 
 // ─── Start Server ─────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 TREND HIVE Backend server port ${PORT} par chal raha hai`);
+    console.log(`🚀 TREND HIVE Backend server port ${PORT} is running`);
 });
 
 module.exports = app;
